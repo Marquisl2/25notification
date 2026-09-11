@@ -38,10 +38,7 @@ class NotificationProvider with ChangeNotifier {
   NotificationStatus? get statusFilter => _statusFilter;
   NotificationPriority? get priorityFilter => _priorityFilter;
 
-  /// RecipientIds únicos descubiertos a lo largo de todas las cargas.
-  /// Se acumulan y NO se vacían al cambiar filtros.
-  /// La API no tiene endpoint de usuarios, así que extraemos los IDs
-  /// de las notificaciones cargadas.
+  /// RecipientIds únicos acumulados de las notificaciones cargadas.
   List<String> get knownRecipientIds {
     final ids = _knownRecipientIds.toList();
     ids.sort();
@@ -50,21 +47,16 @@ class NotificationProvider with ChangeNotifier {
 
   bool get hasMore => _meta?.hasMore ?? false;
   
-  /// UnreadCount de la bandeja/filtro actual (contextual)
-  /// Si filtramos por "read" (leídas), el badge debe ser 0
+  /// UnreadCount contextual del filtro actual
   int get unreadCount {
-    // Si filtramos explícitamente por "leídas", no hay no leídas
     if (_statusFilter == NotificationStatus.read) {
       return 0;
     }
     
-    // Si filtramos por "scheduled", contar las scheduled
     if (_statusFilter == NotificationStatus.scheduled) {
       return _notifications.where((n) => n.status == NotificationStatus.scheduled).length;
     }
     
-    // En cualquier otro caso (todas, no leídas, filtro por prioridad, etc.),
-    // usar el unreadCount del meta de la API
     return _meta?.unreadCount ?? 0;
   }
 
@@ -94,7 +86,6 @@ class NotificationProvider with ChangeNotifier {
       _notifications = result.data;
       _meta = result.meta;
       
-      // Acumular recipientIds descubiertos (no se vacía al filtrar)
       for (final notification in result.data) {
         _knownRecipientIds.add(notification.recipientId);
       }
@@ -143,7 +134,6 @@ class NotificationProvider with ChangeNotifier {
       _notifications.addAll(result.data);
       _meta = result.meta;
       
-      // Acumular recipientIds descubiertos
       for (final notification in result.data) {
         _knownRecipientIds.add(notification.recipientId);
       }
@@ -187,13 +177,10 @@ class NotificationProvider with ChangeNotifier {
     try {
       final createdNotifications = await _service.createNotification(dto);
       
-      // Acumular recipientIds de las notificaciones creadas
       for (final notification in createdNotifications) {
         _knownRecipientIds.add(notification.recipientId);
       }
       
-      // Recargar para reflejar la nueva notificación y actualizar el badge contextual
-      // (El badge se actualiza automáticamente con el nuevo meta.unreadCount)
       await loadNotifications(refresh: true);
     } catch (e) {
       rethrow; // La UI maneja el error

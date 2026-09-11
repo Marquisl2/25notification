@@ -9,7 +9,6 @@ class ApiException implements Exception {
   /// Factory para parsear errores 400/401 de la API
   factory ApiException.fromResponse(int statusCode, dynamic responseData) {
     if (statusCode == 400) {
-      // Error de validación: message puede ser array o string
       if (responseData is Map && responseData['message'] != null) {
         final message = responseData['message'];
         if (message is List) {
@@ -23,7 +22,6 @@ class ApiException implements Exception {
     }
     
     if (statusCode == 401) {
-      // Usar mensaje del servidor si está disponible
       final serverMessage = responseData is Map && responseData['message'] is String
           ? responseData['message'] as String
           : 'Token ausente o inválido';

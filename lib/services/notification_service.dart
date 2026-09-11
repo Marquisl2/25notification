@@ -11,11 +11,8 @@ import 'api_exceptions.dart';
 class NotificationService {
   final Dio _dio = ApiClient().dio;
 
-  /// GET /notifications con filtros opcionales
-  /// 
-  /// status (leída/no leída) e includeScheduled (mostrar programadas) son
-  /// parámetros ORTOGONALES: no se pisan.
-  /// includeScheduled queda con default: false y SIN UI (no lo pide el enunciado).
+  /// GET /notifications con filtros opcionales.
+  /// Nota: includeScheduled=false por defecto (sin UI según enunciado).
   Future<NotificationListDto> getNotifications({
     String? recipientId,
     NotificationStatus? status,
