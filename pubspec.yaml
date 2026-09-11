@@ -1,0 +1,42 @@
+name: notification_app
+description: App Flutter para gestión de notificaciones in-app
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.8.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  # Estado
+  provider: ^6.1.1
+  
+  # HTTP y serialización
+  dio: ^5.4.0
+  json_annotation: ^4.12.0
+  
+  # Configuración
+  flutter_dotenv: ^5.1.0
+  
+  # Navegación
+  go_router: ^13.0.0
+  
+  # Utilidades
+  intl: ^0.19.0
+  google_fonts: ^6.1.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+  
+  # Generación de código
+  build_runner: ^2.4.7
+  json_serializable: ^6.8.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - .env
